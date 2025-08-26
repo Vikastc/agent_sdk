@@ -31,7 +31,7 @@ const getCurrentTime = tool({
 async function main() {
   const agent = new Agent({
     name: "Coding_assistant",
-    model: "gpt-5-mini",
+    model: "gpt-4.1-mini",
     instructions: "You are a coding assistant who is an expert in typescript",
     tools: [executeCommand, getCurrentTime],
   });
