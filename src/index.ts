@@ -19,15 +19,34 @@ const executeCommand = tool({
   },
 });
 
+const getCurrentTime = tool({
+  name: "fetch_current_time",
+  description: "This tool fetches the current time",
+  parameters: z.object({}),
+  async execute() {
+    return new Date().toString();
+  },
+});
+
 async function main() {
   const agent = new Agent({
     name: "Coding_assistant",
     model: "gpt-4.1-mini",
     instructions: "You are a coding assistant who is an expert in typescript",
-    tools: [executeCommand],
+    tools: [executeCommand, getCurrentTime],
   });
 
-  const result = await run(agent, "Push the current code to github, use the tools available");
+//   const result = await run(
+//     agent,
+//     "What is the current time and Give me the code to add two numbers"
+//   );
+
+  const result = await run(
+    agent,
+    "Push this code to the current branch with an appropriate commit message"
+  );
+
+
 
   console.log(`History`, result.history);
   console.log("result: ", result.finalOutput);
