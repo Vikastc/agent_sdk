@@ -19,6 +19,24 @@ const executeCommand = tool({
   },
 });
 
+const getCurrentMenu = tool({
+  name: "get_current_menu",
+  description: "This tool returns the current menu available",
+  parameters: z.object({}),
+  async execute() {
+    return {
+      Food: {
+        DalMakhni: "INR 250",
+        Panner: "INR 400",
+      },
+      Drinks: {
+        Chai: "INR 50",
+        Coffee: "INR 70",
+      },
+    };
+  },
+});
+
 const getCurrentTime = tool({
   name: "fetch_current_time",
   description: "This tool fetches the current time",
@@ -29,21 +47,38 @@ const getCurrentTime = tool({
 });
 
 async function main() {
-  const agent = new Agent({
+  const coadingAgent = new Agent({
     name: "Coding_assistant",
     model: "gpt-4.1-mini",
     instructions: "You are a coding assistant who is an expert in typescript",
     tools: [executeCommand, getCurrentTime],
   });
 
+  const cookingAgent = new Agent({
+    name: "Cooking_agent",
+    model: "gpt-4.1-mini",
+    instructions:
+      "You are a cooking assistant who is an expert in culinary arts",
+    tools: [getCurrentTime, getCurrentMenu],
+  });
+
+  const gatewayAgent = Agent.create({
+    name: "Triage Agent",
+    instructions: `
+        You determine which agent to call based on user query,
+        If it is food related handoff to cookingAgent and if it is coding related handoff to coadingAgent
+  `,
+    handoffs: [cookingAgent, coadingAgent],
+  });
+
   //   const result = await run(
-  //     agent,
-  //     "What is the current time and Give me the code to add two numbers"
+  //     gatewayAgent,
+  //     "I want to eat a piece of cake is it available at this time or what is available"
   //   );
 
   const result = await run(
-    agent,
-    "Push this code to the current branch with an appropriate commit message"
+    gatewayAgent,
+    "Push this code to the current branch with an appropriate commit message based on the changes"
   );
 
   console.log(`History`, result.history);
