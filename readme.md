@@ -165,3 +165,6 @@ pnpm start   # Run compiled version
 - Limited to 3 screenshots for debugging
 - Requires visible form elements (no shadow DOM support)
 - Works best with standard HTML forms
+
+# Youtube (Video Demo)
+https://youtu.be/__P-O0OOdIA
