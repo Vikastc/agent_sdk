@@ -62,7 +62,7 @@ pnpm start
 3. Enter your automation query when prompted. Example:
 
 ```
-Enter the query: Fill the signup form at https://example.com/signup with John Doe, john@example.com, and password123
+Enter the query: Create account on https://ui.chaicode.com/auth/signup with name John Smith, email john@test.com, password mypass123
 ```
 
 ## Supported Operations
