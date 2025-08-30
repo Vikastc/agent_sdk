@@ -1,7 +1,9 @@
 import "dotenv/config";
-import { Agent, run, tool } from "@openai/agents";
+import { Agent, run, tool, AgentInputItem } from "@openai/agents";
 import { exec } from "child_process";
 import { z } from "zod";
+
+let thread: AgentInputItem[] = [];
 
 const executeCommand = tool({
   name: "system_access_tool",
@@ -64,25 +66,40 @@ async function main() {
 
   const gatewayAgent = Agent.create({
     name: "Triage Agent",
+    model: "gpt-4.1-mini",
     instructions: `
-        You determine which agent to call based on user query,
-        If it is food related handoff to cookingAgent and if it is coding related handoff to coadingAgent
-  `,
+          You determine which agent to call based on user query,
+          If it is food related handoff to cookingAgent and if it is coding related handoff to coadingAgent
+    `,
     handoffs: [cookingAgent, coadingAgent],
   });
 
+  async function handleUserQuery(query: string) {
+    const result = await run(
+      gatewayAgent,
+      thread.concat({ role: "user", content: query })
+    );
+
+    thread = result.history;
+
+    console.log(`History`, result.history);
+    console.log("result: ", result.finalOutput);
+
+    return result.finalOutput;
+  }
+
   //   const result = await run(
   //     gatewayAgent,
-  //     "I want to eat a piece of cake is it available at this time or what is available"
+  //     "Push this code to the current branch with an appropriate commit message based on the changes"
   //   );
 
-  const result = await run(
-    gatewayAgent,
+//   await handleUserQuery("Hi my name is vikas");
+
+  await handleUserQuery(
     "Push this code to the current branch with an appropriate commit message based on the changes"
   );
 
-  console.log(`History`, result.history);
-  console.log("result: ", result.finalOutput);
+//   await handleUserQuery("What is my name?");
 }
 
 main();
